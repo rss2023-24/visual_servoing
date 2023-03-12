@@ -2,6 +2,7 @@ import cv2
 import imutils
 import numpy as np
 import pdb
+import matplotlib.pyplot as plt
 
 #################### X-Y CONVENTIONS #########################
 # 0,0  X  > > > > >
@@ -77,7 +78,7 @@ def cd_sift_ransac(img, template):
 		return ((x_min, y_min), (x_max, y_max))
 	else:
 
-		print "[SIFT] not enough matches; matches: ", len(good)
+		print("[SIFT] not enough matches; matches: ", len(good))
 
 		# Return bounding box of area 0 if no match found
 		return ((0,0), (0,0))
@@ -101,24 +102,42 @@ def cd_template_matching(img, template):
 	(img_height, img_width) = img_canny.shape[:2]
 
 	# Keep track of best-fit match
-	best_match = None
+	best_match = 0
+	bounding_box = ((0,0),(0,0))
 
 	# Loop over different scales of image
 	for scale in np.linspace(1.5, .5, 50):
 		# Resize the image
 		resized_template = imutils.resize(template_canny, width = int(template_canny.shape[1] * scale))
 		(h,w) = resized_template.shape[:2]
+		
 		# Check to see if test image is now smaller than template image
 		if resized_template.shape[0] > img_height or resized_template.shape[1] > img_width:
 			continue
 
-		########## YOUR CODE STARTS HERE ##########
-		# Use OpenCV template matching functions to find the best match
-		# across template scales.
+		# Perform Match
+		score_array = cv2.matchTemplate(img_canny, resized_template, cv2.TM_CCOEFF_NORMED)
+		min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(score_array)
 
-		# Remember to resize the bounding box using the highest scoring scale
-		# x1,y1 pixel will be accurate, but x2,y2 needs to be correctly scaled
-		bounding_box = ((0,0),(0,0))
-		########### YOUR CODE ENDS HERE ###########
+		# Get bounding box
+		if max_val > best_match:
+			best_match = max_val
+			bottom_left =  max_loc
+			top_right = (bottom_left[0] + w, bottom_left[1] + h)
+			bounding_box = (bottom_left, top_right)
+
+	#debug_mask(img, bounding_box)
 
 	return bounding_box
+
+def debug_mask(original_image, bounding_box):
+	# Plot selected segmentation boundaries
+	cv2.rectangle(original_image, bounding_box[0], bounding_box[1], (0, 0, 255), 2)
+	plt.imshow(original_image)		
+	plt.show()
+	
+
+if __name__ == "__main__":
+    image = cv2.imread("./test_images_cone/test5.jpg")
+    template = cv2.imread("./test_images_cone/cone_template.png")
+    cd_template_matching(image, template)
