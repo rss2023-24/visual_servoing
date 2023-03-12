@@ -70,7 +70,26 @@ def cd_sift_ransac(img, template):
 
 		########## YOUR CODE STARTS HERE ##########
 
-		x_min = y_min = x_max = y_max = 0
+		dst = cv2.perspectiveTransform(pts,M)
+		dst += (w, 0)
+		print(dst)
+		a = np.int32(dst)
+		# print(a[0][0][0], a[0][0][1])
+		x_min, y_min = a[0][0][0], a[0][0][1]
+		x_max, y_max = a[3][0][0], a[3][0][1]
+		print((x_min, y_min), (x_max, y_max))
+		# x_min = y_min = x_max = y_max = 0
+
+		draw_params = dict(matchColor = (0,255,0), # draw matches in green color
+               singlePointColor = None,
+               matchesMask = matchesMask, # draw only inliers
+               flags = 2)
+
+		img3 = cv2.drawMatches(template,kp1,img,kp2,good, None,**draw_params)
+
+		# Draw bounding box in Red
+		img3 = cv2.polylines(img3, [np.int32(dst)], True, (0,0,255),3, cv2.LINE_AA)
+		image_print(img3)
 
 		########### YOUR CODE ENDS HERE ###########
 
@@ -92,6 +111,7 @@ def cd_template_matching(img, template):
 		bbox: ((x1, y1), (x2, y2)); the bounding box of the cone, unit in px
 				(x1, y1) is the bottom left of the bbox and (x2, y2) is the top right of the bbox
 	"""
+
 	template_canny = cv2.Canny(template, 50, 200)
 
 	# Perform Canny Edge detection on test image
@@ -138,6 +158,11 @@ def debug_mask(original_image, bounding_box):
 	
 
 if __name__ == "__main__":
-    image = cv2.imread("./test_images_cone/test5.jpg")
-    template = cv2.imread("./test_images_cone/cone_template.png")
-    cd_template_matching(image, template)
+    # image = cv2.imread("./test_images_cone/test5.jpg")
+    # template = cv2.imread("./test_images_cone/cone_template.png")
+    # cd_template_matching(image, template)
+    
+	cd_sift_ransac(
+		cv2.imread("./test_images_citgo/citgo1.jpeg"), 
+		cv2.imread("./test_images_citgo/citgo_template.png")
+	)
