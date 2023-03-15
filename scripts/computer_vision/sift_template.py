@@ -71,10 +71,13 @@ def cd_sift_ransac(img, template):
 		########## YOUR CODE STARTS HERE ##########
 
 		dst = cv2.perspectiveTransform(pts,M)
-		dst += (w, 0)
 		a = np.int32(dst)
 		x_min, y_min = a[0][0][0], a[0][0][1]
-		x_max, y_max = a[3][0][0], a[3][0][1]
+		x_max, y_max = a[2][0][0], a[2][0][1]
+
+		# Draw bounding box in Red
+		bbox_img = cv2.polylines(img, [np.int32(dst)], True, (0,0,255),3, cv2.LINE_AA)
+		image_print(bbox_img)
 
 		########### YOUR CODE ENDS HERE ###########
 
@@ -163,5 +166,5 @@ if __name__ == "__main__":
     
 	cd_sift_ransac(
 		cv2.imread("./test_images_citgo/citgo1.jpeg"), 
-		cv2.imread("./test_images_citgo/citgo_template.png")
+		cv2.imread("./test_images_citgo/citgo_template.png", 0)
 	)
