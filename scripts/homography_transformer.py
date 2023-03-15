@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 
+from geometry_msgs.msg import Point
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from ackermann_msgs.msg import AckermannDriveStamped
@@ -62,6 +63,13 @@ class HomographyTransformer:
         np_pts_image = np.float32(np_pts_image[:, np.newaxis, :])
 
         self.h, err = cv2.findHomography(np_pts_image, np_pts_ground)
+
+        # Debug
+        self.marker_sub =  rospy.Subscriber("/zed/rgb/image_rect_color_mouse_left", Point, self.handle_clicking)
+
+    def handle_clicking(self, msg):
+        print(msg)
+        
 
     def cone_detection_callback(self, msg):
         #Extract information from message
