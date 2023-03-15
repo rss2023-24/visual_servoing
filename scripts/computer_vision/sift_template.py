@@ -120,6 +120,15 @@ def cd_template_matching(img, template):
 		if resized_template.shape[0] > img_height or resized_template.shape[1] > img_width:
 			continue
 
+		########## YOUR CODE STARTS HERE ##########
+
+		# Use OpenCV template matching functions to find the best match
+		# across template scales.
+
+		# Remember to resize the bounding box using the highest scoring scale
+		# x1,y1 pixel will be accurate, but x2,y2 needs to be correctly scaled
+		
+
 		# Perform Match
 		score_array = cv2.matchTemplate(img_canny, resized_template, cv2.TM_CCOEFF_NORMED)
 		min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(score_array)
@@ -130,6 +139,11 @@ def cd_template_matching(img, template):
 			bottom_left =  max_loc
 			top_right = (bottom_left[0] + w, bottom_left[1] + h)
 			bounding_box = (bottom_left, top_right)
+
+
+		########### YOUR CODE ENDS HERE ###########
+
+		
 
 	#debug_mask(img, bounding_box)
 
