@@ -21,10 +21,15 @@ from visual_servoing.msg import ConeLocation, ConeLocationPixel
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[-1, -1],
-                   [-1, -1],
-                   [-1, -1],
-                   [-1, -1]] # dummy points
+
+#[171, 365]
+#[490, 266]
+#[536, 303]
+#[121, 305]
+PTS_IMAGE_PLANE = [[153, 317],
+                   [487, 311],
+                   [530, 349],
+                   [101, 361]] # dummy points
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
@@ -32,10 +37,10 @@ PTS_IMAGE_PLANE = [[-1, -1],
 
 ######################################################
 ## DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[-1, -1],
-                    [-1, -1],
-                    [-1, -1],
-                    [-1, -1]] # dummy points
+PTS_GROUND_PLANE = [[20, 10],
+                    [20, -10],
+                    [15, -10],
+                    [15, 10]] # dummy points
 ######################################################
 
 METERS_PER_INCH = 0.0254
@@ -63,14 +68,7 @@ class HomographyTransformer:
         np_pts_image = np.float32(np_pts_image[:, np.newaxis, :])
 
         self.h, err = cv2.findHomography(np_pts_image, np_pts_ground)
-
-        # Debug
-        self.marker_sub =  rospy.Subscriber("/zed/rgb/image_rect_color_mouse_left", Point, self.handle_clicking)
-
-    def handle_clicking(self, msg):
-        print(msg)
         
-
     def cone_detection_callback(self, msg):
         #Extract information from message
         u = msg.u
@@ -78,6 +76,9 @@ class HomographyTransformer:
 
         #Call to main function
         x, y = self.transformUvToXy(u, v)
+
+        #Create cone marker
+        self.draw_marker(x,y,"base_link")
 
         #Publish relative xy position of object in real world
         relative_xy_msg = ConeLocation()

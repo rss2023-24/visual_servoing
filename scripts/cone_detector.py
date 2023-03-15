@@ -46,6 +46,22 @@ class ConeDetector():
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
 
+        # Gets center pixel on ground
+        bounding_box = cd_color_segmentation(image_msg, ".",False)
+        bottom_center = ((bounding_box[0][0] + bounding_box[1][0]) / 2, bounding_box[1][1])
+        
+        # Creates message
+        if bounding_box == ((0,0), (0,0)):
+            rospy.loginfo("Error: Cone not detected")
+        else:
+            relative_cone_px = ConeLocationPixel()
+            relative_cone_px.u = bottom_center[0]
+            relative_cone_px.v = bottom_center[1]
+
+            # Publishes point
+            self.cone_pub.publish(relative_cone_px)
+
+        # Debug
         debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
         self.debug_pub.publish(debug_msg)
 
