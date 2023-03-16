@@ -10,6 +10,8 @@ from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point #geometry_msgs not in CMake file
 from visual_servoing.msg import ConeLocationPixel
 
+import matplotlib.pyplot as plt
+
 # import your color segmentation algorithm; call this function in ros_image_callback!
 from computer_vision.color_segmentation import cd_color_segmentation
 
@@ -20,6 +22,10 @@ class ConeDetector():
     Subscribes to: /zed/zed_node/rgb/image_rect_color (Image) : the live RGB image from the onboard ZED camera.
     Publishes to: /relative_cone_px (ConeLocationPixel) : the coordinates of the cone in the image frame (units are pixels).
     """
+
+    PERCENT_TO_SHOW = 20
+    STARTING_PERCENT_FROM_TOP = 60
+
     def __init__(self):
         # toggle line follower vs cone parker
         self.LineFollower = False
@@ -29,6 +35,8 @@ class ConeDetector():
         self.debug_pub = rospy.Publisher("/cone_debug_img", Image, queue_size=10)
         self.image_sub = rospy.Subscriber("/zed/zed_node/rgb/image_rect_color", Image, self.image_callback)
         self.bridge = CvBridge() # Converts between ROS images and OpenCV Images
+
+
 
     def image_callback(self, image_msg):
         # Apply your imported color segmentation function (cd_color_segmentation) to the image msg here
@@ -45,6 +53,15 @@ class ConeDetector():
         #################################
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+
+        if self.LineFollower == True:
+            height, width = image.shape
+            start_index = height * self.STARTING_PERCENT_FROM_TOP
+            end_index = start_index + height * self.PERCENT_TO_SHOW
+            image = image[:,height * self.start_index: end_index]
+
+        plt.imshow(image)
+        plt.plot()
 
         # Gets center pixel on ground
         bounding_box = cd_color_segmentation(image_msg, ".",False)
