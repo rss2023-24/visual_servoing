@@ -54,7 +54,6 @@ class ConeDetector():
         if bounding_box == ((0,0), (0,0)):
             rospy.loginfo("Error: Cone not detected")
         else:
-            rospy.loginfO("Cone Found!")
             relative_cone_px = ConeLocationPixel()
             relative_cone_px.u = bottom_center[0]
             relative_cone_px.v = bottom_center[1]

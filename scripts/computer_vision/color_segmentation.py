@@ -87,9 +87,10 @@ def cd_color_segmentation(img, template, debug=False):
 
 	# Finds countours	
 	ret,thresh = cv2.threshold(mask, 40, 255, 0)
-	contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+	_, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
 	# Draw biggest bounding box
+        bounding_box = ((0,0),(0,0))
 	if len(contours) != 0:
 		# Draws biggest contour
 		cv2.drawContours(masked_image, contours, -1, 255, 3)
