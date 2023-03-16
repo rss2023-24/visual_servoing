@@ -78,7 +78,6 @@ class HomographyTransformer:
         x, y = self.transformUvToXy(u, v)
 
         #Create cone marker
-        print("x:", x, "y", y)
         self.draw_marker(x,y,"base_link")
 
         #Publish relative xy position of object in real world
