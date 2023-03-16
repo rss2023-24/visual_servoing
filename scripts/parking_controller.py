@@ -15,7 +15,7 @@ class ParkingController():
     Can be used in the simulator and on the real robot.
     """
     CAR_LENGTH = 0.325
-    REVERSE_TIMESTEPS = 5
+    REVERSE_TIME_SEC = 1
 
     def __init__(self):
         rospy.Subscriber("/relative_cone", ConeLocation,
@@ -31,7 +31,8 @@ class ParkingController():
         self.parking_distance = self.CAR_LENGTH + .5 # meters; try playing with this number!
         self.relative_x = 0
         self.relative_y = 0
-        self.reverse = 0
+        self.reverse = False
+        self.time_start_reverse = 0
 
     def relative_cone_callback(self, msg):
         self.relative_x = msg.x_pos
@@ -58,23 +59,28 @@ class ParkingController():
 
         turn_angle = math.atan(L / R)
         drive_speed = 1.0
-        at_correct_distance = abs(L_1  - self.parking_distance) < 0.05
+        at_correct_distance = abs(L_1  - self.parking_distance) < 0.08
         correct_orientation = abs(turn_angle) < 0.08 # within about 5 degrees
-        
-        if self.reverse > 0:
-            drive.speed = -drive_speed 
-            self.reverse -= 1
-        elif correct_orientation and at_correct_distance:
-            drive.speed = 0
-        elif not at_correct_distance:
-            direction = 1 if L_1 > self.parking_distance else -1
-            drive.speed = drive_speed * direction
-            drive.steering_angle = turn_angle * direction
-        elif not correct_orientation:
-            # correct distance, drive backward to give space for correcting angle
-            self.reverse = self.REVERSE_TIMESTEPS
-            drive.speed = -drive_speed 
+        now = rospy.Time.now().to_sec()
+        if self.reverse:
+            if now - self.time_start_reverse >= self.REVERSE_TIME_SEC:
+                self.reverse = False
+            else:
+                drive.speed = -drive_speed 
+                drive.steering_angle = 0
 
+        if not self.reverse:
+            if correct_orientation and at_correct_distance:
+                drive.speed = 0
+            elif not at_correct_distance:
+                direction = 1 if L_1 > self.parking_distance else -1
+                drive.speed = drive_speed * direction
+                drive.steering_angle = turn_angle * direction
+            elif not correct_orientation:
+                # correct distance, drive backward to give space for correcting angle
+                self.time_start_reverse = rospy.Time.now().to_sec()
+                drive.speed = -drive_speed 
+                drive.steering_angle = 0
             
         drive_cmd.drive = drive
 
@@ -96,7 +102,7 @@ class ParkingController():
         # Populate error_msg with relative_x, relative_y, sqrt(x^2+y^2)
         error_msg.x_error = self.relative_x
         error_msg.y_error = self.relative_y
-        error_msg.distance_error = math.sqrt(self.relative_x**2 + self.relative_y**2)
+        error_msg.distance_error = math.sqrt(self.relative_x**2 + self.relative_y**2) - self.parking_distance
 
         #################################
         
