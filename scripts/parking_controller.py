@@ -15,6 +15,7 @@ class ParkingController():
     Can be used in the simulator and on the real robot.
     """
     CAR_LENGTH = 0.325
+    REVERSE_TIMESTEPS = 5
 
     def __init__(self):
         rospy.Subscriber("/relative_cone", ConeLocation,
@@ -26,10 +27,11 @@ class ParkingController():
         self.error_pub = rospy.Publisher("/parking_error",
             ParkingError, queue_size=10)
 
-        self.parking_distance = .5 # meters; try playing with this number!
+        # added car length so desired distance measures from front of car
+        self.parking_distance = self.CAR_LENGTH + .5 # meters; try playing with this number!
         self.relative_x = 0
         self.relative_y = 0
-        self.cur_speed = 0
+        self.reverse = 0
 
     def relative_cone_callback(self, msg):
         self.relative_x = msg.x_pos
@@ -47,30 +49,33 @@ class ParkingController():
         drive_header.frame_id = "base_link"
         drive_cmd.header = drive_header
         drive = AckermannDrive()
-        angle = math.atan2(self.relative_y, self.relative_x)
-        # divided by two to handle the constant adjustment 
-        distance = math.sqrt(self.relative_x**2 + self.relative_y**2)/2
-        # checks if we are close enough and pointed the right direction 
-        if distance > self.parking_distance:
-            if distance > self.parking_distance*2 and abs(angle) < 5:
-                if self.cur_speed == 0.0:
-                    self.cur_speed = 1.0
-            else:
-                distance = distance/3
-            turn_angle = -math.atan(self.CAR_LENGTH*math.sin(angle)/((distance/2)+distance*math.cos(angle)))
-            acceleration = 2*(self.cur_speed**2/distance)*math.sin(angle)
-            drive.acceleration = acceleration
-            drive.steering_angle = -turn_angle
-            drive.speed = self.cur_speed
-            drive_cmd.drive = drive
-        else:
-            drive.speed = 0;
-            drive_cmd.drive = drive
-        # case 1: if the robot is far away and at wrong angle (high L1)
-        # case 2: if the robot is far away and at right angle (high L1)
-        # case 3: if the robot is kinda close and at right angle (Low L1)
-        # case 4: if the robot is kinda close and at wrong angle (low L1)
-        # case 5: if the robot is super close and at wrong andle (Low L1)
+
+        theta = math.atan2(self.relative_y, self.relative_x)
+        L_1 = math.sqrt(self.relative_x**2 + self.relative_y**2)
+        L = self.CAR_LENGTH
+        R = L_1 / (2 * math.sin(theta))
+
+        turn_angle = math.atan(L / R)
+        drive_speed = 1.0
+        at_correct_distance = abs(L_1  - self.parking_distance) < 0.05
+        correct_orientation = abs(turn_angle) < 0.08 # within about 5 degrees
+        
+        if self.reverse > 0:
+            drive.speed = -drive_speed 
+            self.reverse -= 1
+        elif correct_orientation and at_correct_distance:
+            drive.speed = 0
+        elif not at_correct_distance:
+            direction = 1 if L_1 > self.parking_distance else -1
+            drive.speed = drive_speed * direction
+            drive.steering_angle = turn_angle * direction
+        elif not correct_orientation:
+            # correct distance, drive backward to give space for correcting angle
+            self.reverse = self.REVERSE_TIMESTEPS
+            drive.speed = -drive_speed 
+
+            
+        drive_cmd.drive = drive
 
         #################################
 
