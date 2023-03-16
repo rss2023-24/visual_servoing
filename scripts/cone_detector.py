@@ -23,8 +23,8 @@ class ConeDetector():
     Publishes to: /relative_cone_px (ConeLocationPixel) : the coordinates of the cone in the image frame (units are pixels).
     """
 
-    PERCENT_TO_SHOW = 20
-    STARTING_PERCENT_FROM_TOP = 60
+    PERCENT_TO_SHOW = 0.20
+    STARTING_PERCENT_FROM_TOP = 0.60
 
     def __init__(self):
         # toggle line follower vs cone parker
@@ -55,23 +55,26 @@ class ConeDetector():
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
 
         if self.LineFollower == True:
-            height, width = image.shape
-            start_index = height * self.STARTING_PERCENT_FROM_TOP
-            end_index = start_index + height * self.PERCENT_TO_SHOW
-            image = image[:,height * self.start_index: end_index]
+            # Create blank image
+            blank_image = np.zeros([height,width,3],dtype=np.uint8)
 
-        plt.imshow(image)
-        plt.plot()
+            # Add strip of input image to it
+            height, width, _ = image.shape
+            start_index = int(height * self.STARTING_PERCENT_FROM_TOP)
+            end_index = int(start_index + height * self.PERCENT_TO_SHOW)
+            blank_image[start_index: end_index, :] = image[start_index: end_index, :]
+
+            # Output line follower image
+            image = blank_image
 
         # Gets center pixel on ground
-        bounding_box = cd_color_segmentation(image, ".",False)
+        bounding_box = cd_color_segmentation(image_msg, ".",False)
         bottom_center = ((bounding_box[0][0] + bounding_box[1][0]) / 2, bounding_box[1][1])
         
         # Creates message
         if bounding_box == ((0,0), (0,0)):
             rospy.loginfo("Error: Cone not detected")
         else:
-            rospy.loginfO("Cone Found!")
             relative_cone_px = ConeLocationPixel()
             relative_cone_px.u = bottom_center[0]
             relative_cone_px.v = bottom_center[1]
