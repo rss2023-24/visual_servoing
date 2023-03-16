@@ -68,7 +68,7 @@ class ConeDetector():
             image = blank_image
 
         # Gets center pixel on ground
-        bounding_box = cd_color_segmentation(image_msg, ".",False)
+        bounding_box = cd_color_segmentation(image, ".",False)
         bottom_center = ((bounding_box[0][0] + bounding_box[1][0]) / 2, bounding_box[1][1])
         
         # Creates message
