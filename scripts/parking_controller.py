@@ -15,7 +15,7 @@ class ParkingController():
     Can be used in the simulator and on the real robot.
     """
     CAR_LENGTH = 0.325
-    REVERSE_TIME_SEC = 1
+    REVERSE_TIME_SEC = 2
 
     def __init__(self):
         rospy.Subscriber("/relative_cone", ConeLocation,
@@ -71,6 +71,10 @@ class ParkingController():
         if not self.reverse:
             if correct_orientation and at_correct_distance:
                 drive.speed = 0
+            elif self.relative_x - L < 0 or abs(turn_angle) > 0.34:
+                self.time_start_reverse = rospy.Time.now().to_sec()
+                drive.speed = -drive_speed 
+                drive.steering_angle = 0
             elif not at_correct_distance:
                 direction = 1 if L_1 > self.parking_distance else -1
                 drive.speed = drive_speed * direction
