@@ -47,6 +47,8 @@ METERS_PER_INCH = 0.0254
 
 
 class HomographyTransformer:
+    ERROR_OFFSET = 0.4
+    
     def __init__(self):
         self.cone_px_sub = rospy.Subscriber("/relative_cone_px", ConeLocationPixel, self.cone_detection_callback)
         self.cone_pub = rospy.Publisher("/relative_cone", ConeLocation, queue_size=10)
@@ -76,6 +78,10 @@ class HomographyTransformer:
 
         #Call to main function
         x, y = self.transformUvToXy(u, v)
+
+        #Accomdate error in measurement
+        if x >= self.ERROR_OFFSET:
+            x = x + self.ERROR_OFFSET
 
         #Create cone marker
         self.draw_marker(x,y,"base_link")
