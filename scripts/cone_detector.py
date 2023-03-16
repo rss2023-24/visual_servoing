@@ -60,9 +60,6 @@ class ConeDetector():
             end_index = start_index + height * self.PERCENT_TO_SHOW
             image = image[:,height * self.start_index: end_index]
 
-        plt.imshow(image)
-        plt.plot()
-
         # Gets center pixel on ground
         bounding_box = cd_color_segmentation(image, ".",False)
         bottom_center = ((bounding_box[0][0] + bounding_box[1][0]) / 2, bounding_box[1][1])
