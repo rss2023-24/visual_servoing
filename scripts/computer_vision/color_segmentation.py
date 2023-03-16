@@ -57,7 +57,7 @@ def debug_mask(original_image, filtered_image, masked_image):
 	plt.imshow(masked_rgb)
 	plt.show()
 
-def cd_color_segmentation(img, template):
+def cd_color_segmentation(img, template, debug=False):
 	"""
 	Implement the cone detection using color segmentation algorithm
 	Input:
@@ -111,8 +111,9 @@ def cd_color_segmentation(img, template):
 		cv2.rectangle(masked_image,bounding_box[0],bounding_box[1],(0,255,0),2)
 
 	# Displays visual representation of color segmentation process
-	debug_mask(img, dilation_image, masked_image)
-	print(bounding_box)
+	if debug==True:
+		debug_mask(img, dilation_image, masked_image)
+		print(bounding_box)
 
 	# Return bounding box
 	return bounding_box
