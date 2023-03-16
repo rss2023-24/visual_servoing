@@ -52,7 +52,8 @@ class ParkingController():
         drive = AckermannDrive()
 
         theta = math.atan2(self.relative_y, self.relative_x)
-        L_1 = math.sqrt(self.relative_x**2 + self.relative_y**2)
+        # L_1 = math.sqrt(self.relative_x**2 + self.relative_y**2)
+        L_1 = math.sqrt(self.relative_x**2 + self.relative_y**2) / 2
         L = self.CAR_LENGTH
         R = L_1 / (2 * math.sin(theta))
 
