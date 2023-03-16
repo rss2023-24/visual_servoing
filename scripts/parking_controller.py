@@ -26,7 +26,7 @@ class ParkingController():
         self.error_pub = rospy.Publisher("/parking_error",
             ParkingError, queue_size=10)
 
-        self.parking_distance = .75 # meters; try playing with this number!
+        self.parking_distance = .5 # meters; try playing with this number!
         self.relative_x = 0
         self.relative_y = 0
         self.cur_speed = 0
@@ -46,21 +46,17 @@ class ParkingController():
         drive_header.stamp = rospy.Time.now() 
         drive_header.frame_id = "base_link"
         drive_cmd.header = drive_header
-        print("is working")
         drive = AckermannDrive()
-        # if abs(self.relative_x)> 0 and abs(self.relative_y) > 0:
-        #     angle = math.atan2(max(min(-1, self.relative_x/self.relative_y), 1))
-        #     if self.relative_x < 0:
-        #         angle = angle*-1
-        # else:
-        #     angle = 0
         angle = math.atan2(self.relative_y, self.relative_x)
-        print("angle:")
-        print(angle)
-        distance = math.sqrt(self.relative_x**2 + self.relative_y**2)
+        # divided by two to handle the constant adjustment 
+        distance = math.sqrt(self.relative_x**2 + self.relative_y**2)/2
+        # checks if we are close enough and pointed the right direction 
         if distance > self.parking_distance:
-            if self.cur_speed == 0.0:
-                self.cur_speed = 1.0
+            if distance > self.parking_distance*2 and abs(angle) < 5:
+                if self.cur_speed == 0.0:
+                    self.cur_speed = 1.0
+            else:
+                distance = distance/3
             turn_angle = -math.atan(self.CAR_LENGTH*math.sin(angle)/((distance/2)+distance*math.cos(angle)))
             acceleration = 2*(self.cur_speed**2/distance)*math.sin(angle)
             drive.acceleration = acceleration
@@ -70,7 +66,11 @@ class ParkingController():
         else:
             drive.speed = 0;
             drive_cmd.drive = drive
-
+        # case 1: if the robot is far away and at wrong angle (high L1)
+        # case 2: if the robot is far away and at right angle (high L1)
+        # case 3: if the robot is kinda close and at right angle (Low L1)
+        # case 4: if the robot is kinda close and at wrong angle (low L1)
+        # case 5: if the robot is super close and at wrong andle (Low L1)
 
         #################################
 
