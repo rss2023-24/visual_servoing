@@ -84,7 +84,7 @@ class HomographyTransformer:
             x = x + self.ERROR_OFFSET
 
         #Create cone marker
-        self.draw_marker(x,y,"base_link")
+        # self.draw_marker(x,y,"base_link")
 
         #Publish relative xy position of object in real world
         relative_xy_msg = ConeLocation()
