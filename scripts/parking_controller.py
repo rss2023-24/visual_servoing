@@ -32,7 +32,8 @@ class ParkingController():
         self.desired_distance = 0.5
 
         # added car length so desired distance measures from front of car
-        self.parking_distance = self.CAR_LENGTH + self.desired_distance + self.cone_translation_constant # meters; try playing with this number!
+        # self.parking_distance = self.CAR_LENGTH + self.desired_distance + self.cone_translation_constant # meters; try playing with this number!
+        self.parking_distance = self.desired_distance + self.cone_translation_constant # meters; try playing with this number!
         self.relative_x = 0
         self.relative_y = 0
         self.reverse = False
