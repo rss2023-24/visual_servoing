@@ -29,7 +29,7 @@ class ParkingController():
 
         
         self.cone_translation_constant = 0.0 # Makes it stop further away
-        self.desired_distance = 1.0
+        self.desired_distance = 0.5
 
         # added car length so desired distance measures from front of car
         self.parking_distance = self.CAR_LENGTH + self.desired_distance + self.cone_translation_constant # meters; try playing with this number!
