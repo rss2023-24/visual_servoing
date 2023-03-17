@@ -15,7 +15,7 @@ class ParkingController():
     Can be used in the simulator and on the real robot.
     """
     CAR_LENGTH = 0.325
-    REVERSE_TIME_SEC = 2
+    REVERSE_TIME_SEC = 1.25
 
     def __init__(self):
         rospy.Subscriber("/relative_cone", ConeLocation,
@@ -52,14 +52,14 @@ class ParkingController():
         drive = AckermannDrive()
 
         theta = math.atan2(self.relative_y, self.relative_x)
-        # L_1 = math.sqrt(self.relative_x**2 + self.relative_y**2)
-        L_1 = max( (math.sqrt(self.relative_x**2 + self.relative_y**2) / 2.0), self.parking_distance)
+        L_1 = math.sqrt(self.relative_x**2 + self.relative_y**2)
+        # L_1 = max( (math.sqrt(self.relative_x**2 + self.relative_y**2) / 2.0), self.parking_distance)
         L = self.CAR_LENGTH
         R = L_1 / (2 * math.sin(theta))
 
         turn_angle = math.atan(L / R)
         drive_speed = 1.0
-        at_correct_distance = abs(L_1  - self.parking_distance) < 0.08
+        at_correct_distance = abs(L_1  - self.parking_distance) < 0.131
         correct_orientation = abs(turn_angle) < 0.08 # within about 5 degrees
         now = rospy.Time.now().to_sec()
         if self.reverse:
