@@ -15,7 +15,7 @@ class ParkingController():
     Can be used in the simulator and on the real robot.
     """
     CAR_LENGTH = 0.325
-    REVERSE_TIME_SEC = 1.25
+    REVERSE_TIME_SEC = 1.75
 
     def __init__(self):
         rospy.Subscriber("/relative_cone", ConeLocation,
