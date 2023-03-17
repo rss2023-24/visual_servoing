@@ -57,6 +57,8 @@ class ParkingController():
         L = self.CAR_LENGTH
         R = L_1 / (2 * math.sin(theta))
 
+        print(theta)
+
         turn_angle = math.atan(L / R)
         drive_speed = 1.0
         at_correct_distance = abs(L_1  - self.parking_distance) < 0.08
@@ -83,7 +85,7 @@ class ParkingController():
             elif not correct_orientation:
                 # correct distance, drive backward to give space for correcting angle
 
-                print(theta)
+                # print(theta)
 
                 self.time_start_reverse = rospy.Time.now().to_sec()
                 drive.speed = -drive_speed 
