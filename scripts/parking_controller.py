@@ -57,7 +57,7 @@ class ParkingController():
 
         theta = math.atan2(self.relative_y, self.relative_x)
 
-        measured_dist_translation = 0.4
+        measured_dist_translation = 0.3
         pre_L_1 = math.sqrt(self.relative_x**2 + self.relative_y**2)
         L_1 = max(pre_L_1 - measured_dist_translation, 0.0001)
 
