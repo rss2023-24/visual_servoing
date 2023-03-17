@@ -24,6 +24,10 @@ import pdb
 
 ## Color segmentation boundaries
 
+# Cone Values
+#DARK_ORANGE = (1, 190, 90) # Make final number smaller to detect darker oranges
+#LIGHT_ORANGE  = (26, 255, 255) # Make first number larger to detect yellows
+
 DARK_ORANGE = (1, 190, 0) # Make final number smaller to detect darker oranges
 LIGHT_ORANGE  = (12, 255, 255) # Make first number larger to detect yellows
 
