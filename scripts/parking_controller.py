@@ -59,8 +59,8 @@ class ParkingController():
 
         measured_dist_translation = 0.4
         pre_L_1 = math.sqrt(self.relative_x**2 + self.relative_y**2)
-        L_1 = max(pre_L_1 - measured_dist_translation, 0.0)
-        
+        L_1 = max(pre_L_1 - measured_dist_translation, 0.0001)
+
         # L_1 = max( (math.sqrt(self.relative_x**2 + self.relative_y**2) / 2.0), self.parking_distance)
         L = self.CAR_LENGTH
         R = L_1 / (2 * math.sin(theta))
