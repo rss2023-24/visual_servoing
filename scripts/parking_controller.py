@@ -28,11 +28,11 @@ class ParkingController():
             ParkingError, queue_size=10)
 
         
-        self.cone_translation_constant = 0.0 # Makes it stop further away
+        self.cone_translation_constant = -0.10 # Makes it stop further away
         self.desired_distance = 0.5
 
         # added car length so desired distance measures from front of car
-        self.parking_distance = self.CAR_LENGTH + self.desired_distance + self.cone_translation_constant # meters; try playing with this number!
+        self.parking_distance = max(self.CAR_LENGTH + self.desired_distance + self.cone_translation_constant, 0.0) # meters; try playing with this number!
         # self.parking_distance = self.desired_distance + self.cone_translation_constant # meters; try playing with this number!
         self.relative_x = 0
         self.relative_y = 0
@@ -72,7 +72,7 @@ class ParkingController():
 
         turn_angle = math.atan(L / R)
         drive_speed = 1.0
-        at_correct_distance = abs(L_1  - self.parking_distance) < 0.12
+        at_correct_distance = abs(L_1  - self.parking_distance) < 0.08
         correct_orientation = abs(theta) < math.radians(7.5)
         now = rospy.Time.now().to_sec()
         if self.reverse:
