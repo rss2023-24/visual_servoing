@@ -84,9 +84,9 @@ class ConeDetector():
             self.cone_pub.publish(relative_cone_px)
 
         # Debug
-        # cv2.rectangle(image,bounding_box[0],bounding_box[1],(0,255,0),2)
-        # debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
-        # self.debug_pub.publish(debug_msg)
+        cv2.rectangle(image,bounding_box[0],bounding_box[1],(0,255,0),2)
+        debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
+        self.debug_pub.publish(debug_msg)
 
 
 if __name__ == '__main__':
