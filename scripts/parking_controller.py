@@ -66,7 +66,7 @@ class ParkingController():
         turn_angle = math.atan(L / R)
         drive_speed = 1.0
         at_correct_distance = abs(L_1  - self.parking_distance) < 0.08
-        correct_orientation = abs(theta) < math.radians(16.0)
+        correct_orientation = abs(theta) < math.radians(25.0)
         now = rospy.Time.now().to_sec()
         if self.reverse:
             if now - self.time_start_reverse >= self.REVERSE_TIME_SEC:
