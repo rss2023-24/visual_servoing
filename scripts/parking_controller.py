@@ -28,7 +28,8 @@ class ParkingController():
             ParkingError, queue_size=10)
 
         # added car length so desired distance measures from front of car
-        self.parking_distance = self.CAR_LENGTH + .5 # meters; try playing with this number!
+        self.desired_distance = 1.0
+        self.parking_distance = self.CAR_LENGTH + self.desired_distance # meters; try playing with this number!
         self.relative_x = 0
         self.relative_y = 0
         self.reverse = False
@@ -57,7 +58,7 @@ class ParkingController():
         L = self.CAR_LENGTH
         R = L_1 / (2 * math.sin(theta))
 
-        print(theta)
+        # print(theta)
 
         turn_angle = math.atan(L / R)
         drive_speed = 1.0
