@@ -71,15 +71,18 @@ def cd_color_segmentation(img, template, debug=False):
 
 	# Performs filtering to remove image noise
 	# TODO This section can be tuned to produce better scores
-	filter1_image = cv2.blur(img,(5,5))
-	filter2_image = cv2.medianBlur(filter1_image,5)
-	filter3_image = cv2.GaussianBlur(filter2_image,(5,5),0)
-	filter4_image = cv2.bilateralFilter(filter3_image,9,75,75)
-	erosion_image = cv2.erode(filter4_image, kernel, iterations=2)
-	dilation_image = cv2.dilate(erosion_image, kernel, iterations=2)
+
+	# filter1_image = cv2.blur(img,(5,5))
+	# filter2_image = cv2.medianBlur(filter1_image,5)
+	# filter3_image = cv2.GaussianBlur(filter2_image,(5,5),0)
+	# filter4_image = cv2.bilateralFilter(filter3_image,9,75,75)
+	# erosion_image = cv2.erode(filter4_image, kernel, iterations=2)
+	# dilation_image = cv2.dilate(erosion_image, kernel, iterations=2)
+
+	filtered_image = cv2.GaussianBlur(img,(5,5),0)
 
 	# Converts image to hsv color space
-	hsv_image = cv2.cvtColor(dilation_image, cv2.COLOR_BGR2HSV)
+	hsv_image = cv2.cvtColor(filtered_image, cv2.COLOR_BGR2HSV)
 
 	# Filters out colors within our segmentation  boundaries
 	mask = cv2.inRange(hsv_image, DARK_ORANGE, LIGHT_ORANGE)
@@ -90,21 +93,21 @@ def cd_color_segmentation(img, template, debug=False):
 	_, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
 	# Draw biggest bounding box
-        bounding_box = ((0,0),(0,0))
+	bounding_box = ((0,0),(0,0))
 	if len(contours) != 0:
 		# Draws biggest contour
-		cv2.drawContours(masked_image, contours, -1, 255, 3)
+		# cv2.drawContours(masked_image, contours, -1, 255, 3)
 
-		new_contours = []
+		# new_contours = []
 		
-		# Filters out unreasonable contours
-		for contour in contours:
-			(x,y,w,h) = cv2.boundingRect(contour)
-			if not (w > h + 10):
-				new_contours.append(contour)
+		# # Filters out unreasonable contours
+		# for contour in contours:
+		# 	(x,y,w,h) = cv2.boundingRect(contour)
+		# 	if not (w > h + 10):
+		# 		new_contours.append(contour)
 
 		# find the biggest countour by area
-		c = max(new_contours, key = cv2.contourArea)
+		c = max(contours, key = cv2.contourArea)
 		x,y,w,h = cv2.boundingRect(c)
 		bounding_box = ((x,y),(x+w,y+h))
 
@@ -113,7 +116,7 @@ def cd_color_segmentation(img, template, debug=False):
 
 	# Displays visual representation of color segmentation process
 	if debug==True:
-		debug_mask(img, dilation_image, masked_image)
+		debug_mask(img, filtered_image, masked_image)
 		print(bounding_box)
 
 	# Return bounding box
