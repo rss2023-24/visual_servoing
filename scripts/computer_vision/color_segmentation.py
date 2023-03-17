@@ -23,8 +23,8 @@ import pdb
 ###############################################################
 
 ## Color segmentation boundaries
-DARK_ORANGE = (1, 190, 90) # Make final number smaller to detect darker oranges
-LIGHT_ORANGE  = (55, 255, 255) # Make first number larger to detect yellows
+DARK_ORANGE = (1, 190, 80) # Make final number smaller to detect darker oranges
+LIGHT_ORANGE  = (30, 255, 255) # Make first number larger to detect yellows
 
 def image_print(img):
 	"""
