@@ -55,11 +55,12 @@ class ConeDetector():
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
 
         if self.LineFollower == True:
+            # Add strip of input image to it
+            height, width, _ = image.shape
+
             # Create blank image
             blank_image = np.zeros([height,width,3],dtype=np.uint8)
 
-            # Add strip of input image to it
-            height, width, _ = image.shape
             start_index = int(height * self.STARTING_PERCENT_FROM_TOP)
             end_index = int(start_index + height * self.PERCENT_TO_SHOW)
             blank_image[start_index: end_index, :] = image[start_index: end_index, :]
