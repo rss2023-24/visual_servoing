@@ -82,6 +82,9 @@ class ParkingController():
                 drive.steering_angle = turn_angle * direction
             elif not correct_orientation:
                 # correct distance, drive backward to give space for correcting angle
+
+                print(theta)
+
                 self.time_start_reverse = rospy.Time.now().to_sec()
                 drive.speed = -drive_speed 
                 drive.steering_angle = 0
