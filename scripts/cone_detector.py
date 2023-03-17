@@ -24,7 +24,7 @@ class ConeDetector():
     """
 
     PERCENT_TO_SHOW = 0.20
-    STARTING_PERCENT_FROM_TOP = 0.60
+    STARTING_PERCENT_FROM_TOP = 0.40
 
     def __init__(self):
         # toggle line follower vs cone parker
