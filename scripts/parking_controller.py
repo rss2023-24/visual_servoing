@@ -28,7 +28,7 @@ class ParkingController():
             ParkingError, queue_size=10)
 
         
-        self.cone_translation_constant = 1.5 # Makes it stop further away
+        self.cone_translation_constant = 0.0 # Makes it stop further away
         self.desired_distance = 1.0
 
         # added car length so desired distance measures from front of car
