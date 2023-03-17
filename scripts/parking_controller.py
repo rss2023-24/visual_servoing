@@ -62,7 +62,8 @@ class ParkingController():
         R = L_1 / (2 * math.sin(theta))
 
         # print(theta, math.radians(25.0))
-        print(abs(L_1  - self.parking_distance))
+        # print(abs(L_1  - self.parking_distance))
+        print(L_1)
 
         turn_angle = math.atan(L / R)
         drive_speed = 1.0
