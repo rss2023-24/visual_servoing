@@ -23,7 +23,7 @@ class ConeDetector():
     Publishes to: /relative_cone_px (ConeLocationPixel) : the coordinates of the cone in the image frame (units are pixels).
     """
 
-    PERCENT_TO_SHOW = 0.6
+    PERCENT_TO_SHOW = 0.35
     STARTING_PERCENT_FROM_TOP = 0.40
 
     # PERCENT_TO_SHOW = 0.35
