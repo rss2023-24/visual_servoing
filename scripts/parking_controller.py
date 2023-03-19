@@ -29,7 +29,7 @@ class ParkingController():
 
         
         self.cone_translation_constant = -0.10 # Makes it stop further away
-        self.desired_distance = 0.35
+        self.desired_distance = 0.35 # .1 for parking controller
 
         # added car length so desired distance measures from front of car
         self.parking_distance = max(self.CAR_LENGTH + self.desired_distance + self.cone_translation_constant, 0.0) # meters; try playing with this number!
@@ -71,9 +71,9 @@ class ParkingController():
         print(L_1)
 
         turn_angle = math.atan(L / R)
-        drive_speed = 1.5
-        at_correct_distance = abs(L_1  - self.parking_distance) < 0.12
-        correct_orientation = abs(theta) < math.radians(7.0)
+        drive_speed = 0.5
+        at_correct_distance = abs(L_1  - self.parking_distance) < 0.2
+        correct_orientation = abs(theta) < math.radians(10.0)
         now = rospy.Time.now().to_sec()
         if self.reverse:
             if now - self.time_start_reverse >= self.REVERSE_TIME_SEC:
@@ -87,7 +87,7 @@ class ParkingController():
                 drive.speed = 0
             elif self.relative_x - L < 0 or abs(turn_angle) > 0.34:
                 self.time_start_reverse = rospy.Time.now().to_sec()
-                drive.speed = -drive_speed 
+                drive.speed = -drive_speed * 0.5 
                 drive.steering_angle = 0
             elif not at_correct_distance:
                 direction = 1 if L_1 > self.parking_distance else -1
@@ -99,7 +99,7 @@ class ParkingController():
                 # print(theta)
 
                 self.time_start_reverse = rospy.Time.now().to_sec()
-                drive.speed = -drive_speed 
+                drive.speed = -drive_speed * 0.5
                 drive.steering_angle = 0
             
         drive_cmd.drive = drive
