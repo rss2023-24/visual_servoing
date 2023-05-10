@@ -23,15 +23,15 @@ class ConeDetector():
     Publishes to: /relative_cone_px (ConeLocationPixel) : the coordinates of the cone in the image frame (units are pixels).
     """
 
-    PERCENT_TO_SHOW = 0.20
-    STARTING_PERCENT_FROM_TOP = 0.60
+    PERCENT_TO_SHOW = 0.35
+    STARTING_PERCENT_FROM_TOP = 0.5
 
     # PERCENT_TO_SHOW = 0.35
     # STARTING_PERCENT_FROM_TOP = 0.35
 
     def __init__(self):
         # toggle line follower vs cone parker
-        self.LineFollower = False
+        self.LineFollower = True
 
         # Subscribe to ZED camera RGB frames
         self.cone_pub = rospy.Publisher("/relative_cone_px", ConeLocationPixel, queue_size=10)

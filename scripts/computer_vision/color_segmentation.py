@@ -28,8 +28,8 @@ import pdb
 #DARK_ORANGE = (1, 190, 90) # Make final number smaller to detect darker oranges
 #LIGHT_ORANGE  = (26, 255, 255) # Make first number larger to detect yellows
 
-DARK_ORANGE = (1, 190, 0) # Make final number smaller to detect darker oranges
-LIGHT_ORANGE  = (100, 255, 255) # Make first number larger to detect yellows
+DARK_ORANGE = (1, 120, 0) # Make final number smaller to detect darker oranges
+LIGHT_ORANGE  = (110, 255, 255) # Make first number larger to detect yellows
 
 # DARK_ORANGE = (6, 30, 50) # Make final number smaller to detect darker oranges
 # LIGHT_ORANGE  = (15, 60, 100) # Make first number larger to detect yellows
