@@ -18,6 +18,7 @@ class ParkingController():
     REVERSE_TIME_SEC = 2.00
 
     def __init__(self):
+        self.last_cone_time = None
         rospy.Subscriber("/relative_cone", ConeLocation,
             self.relative_cone_callback)
 
@@ -27,7 +28,6 @@ class ParkingController():
         self.error_pub = rospy.Publisher("/parking_error",
             ParkingError, queue_size=10)
 
-        
         self.cone_translation_constant = -0.10 # Makes it stop further away
         self.desired_distance = 0 # .1 for parking controller
 
@@ -39,8 +39,22 @@ class ParkingController():
         self.relative_y = 0
         self.reverse = False
         self.time_start_reverse = 0
+        self.stop_loop()
+
+    def stop_loop(self):
+        while True:
+            t = rospy.Time.now().to_sec()
+            if self.last_cone_time is None or t - self.last_cone_time > 1:
+                drive_cmd = AckermannDriveStamped()
+                drive_header = Header()
+                drive_header.stamp = rospy.Time.now() 
+                drive_header.frame_id = "base_link"
+                drive_cmd.header = drive_header
+                drive_cmd.drive.speed = 0
+                self.drive_pub.publish(drive_cmd)
 
     def relative_cone_callback(self, msg):
+        self.last_cone_time = rospy.Time.now().to_sec()
         self.relative_x = msg.x_pos
         self.relative_y = msg.y_pos
         drive_cmd = AckermannDriveStamped()
