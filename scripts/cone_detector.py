@@ -8,7 +8,9 @@ from cv_bridge import CvBridge, CvBridgeError
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point #geometry_msgs not in CMake file
+from ackermann_msgs.msg import AckermannDriveStamped
 from visual_servoing.msg import ConeLocationPixel
+from std_msgs.msg import Header
 
 import matplotlib.pyplot as plt
 
@@ -32,10 +34,14 @@ class ConeDetector():
     def __init__(self):
         # toggle line follower vs cone parker
         self.LineFollower = True
+        self.no_cone_count = 0
+        self.detect = True
 
         # Subscribe to ZED camera RGB frames
         self.cone_pub = rospy.Publisher("/relative_cone_px", ConeLocationPixel, queue_size=10)
         self.debug_pub = rospy.Publisher("/cone_debug_img", Image, queue_size=10)
+        DRIVE_TOPIC = "/vesc/ackermann_cmd_mux/input/navigation"
+        self.drive_pub = rospy.Publisher(DRIVE_TOPIC, AckermannDriveStamped, queue_size=10)
         self.image_sub = rospy.Subscriber("/zed/zed_node/rgb/image_rect_color", Image, self.image_callback)
         self.bridge = CvBridge() # Converts between ROS images and OpenCV Images
 
@@ -54,7 +60,8 @@ class ConeDetector():
         # pixel location in the image.
         # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         #################################
-
+        if not self.detect: 
+            return
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
 
         if self.LineFollower == True:
@@ -78,7 +85,18 @@ class ConeDetector():
         # Creates message
         if bounding_box == ((0,0), (0,0)):
             rospy.loginfo("Error: Cone not detected")
+            self.no_cone_count += 1
+            if self.no_cone_count >= 10:
+                self.detect = False
+                drive_cmd = AckermannDriveStamped()
+                drive_header = Header()
+                drive_header.stamp = rospy.Time.now() 
+                drive_header.frame_id = "base_link"
+                drive_cmd.header = drive_header
+                drive_cmd.drive.speed = 0
+                self.drive_pub.publish(drive_cmd)
         else:
+            self.no_cone_count = 0
             relative_cone_px = ConeLocationPixel()
             relative_cone_px.u = bottom_center[0]
             relative_cone_px.v = bottom_center[1]
