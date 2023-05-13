@@ -16,6 +16,9 @@
   <node pkg="visual_servoing" name="homography_transformer" type="homography_transformer.py" output="screen">
   </node>
 
+  <node pkg="visual_servoing" name="city" type="city.py" output="screen">
+  </node>
+
   <node pkg="image_transport" name="republish" type="republish" args="raw in:=/cone_debug_img out:=/cone_debug_img_compressed" output="screen"></node>
 
 </launch>
