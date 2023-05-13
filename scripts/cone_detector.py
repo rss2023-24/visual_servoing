@@ -69,6 +69,7 @@ class ConeDetector():
         if not self.detect: 
             return
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        cropped_image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
 
         if self.LineFollower == True:
             # Add strip of input image to it
@@ -82,10 +83,10 @@ class ConeDetector():
             blank_image[start_index: end_index, :] = image[start_index: end_index, :]
 
             # Output line follower image
-            image = blank_image
+            cropped_image = blank_image
 
         # Gets center pixel on ground
-        bounding_box = cd_color_segmentation(image, ".", DARK_ORANGE, LIGHT_ORANGE, False)
+        bounding_box = cd_color_segmentation(cropped_image, ".", DARK_ORANGE, LIGHT_ORANGE, False)
         bottom_center = ((bounding_box[0][0] + bounding_box[1][0]) / 2, bounding_box[1][1])
         
         # Creates message
@@ -129,8 +130,8 @@ class ConeDetector():
 
 
         # Debug
-        cv2.rectangle(image,bounding_box[0],bounding_box[1],(0,255,0),2)
-        debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
+        cv2.rectangle(cropped_image,bounding_box[0],bounding_box[1],(0,255,0),2)
+        debug_msg = self.bridge.cv2_to_imgmsg(cropped_image, "bgr8")
         self.debug_pub.publish(debug_msg)
 
 
