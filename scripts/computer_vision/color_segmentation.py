@@ -28,9 +28,6 @@ import pdb
 #DARK_ORANGE = (1, 190, 90) # Make final number smaller to detect darker oranges
 #LIGHT_ORANGE  = (26, 255, 255) # Make first number larger to detect yellows
 
-DARK_ORANGE = (1, 120, 0) # Make final number smaller to detect darker oranges
-LIGHT_ORANGE  = (110, 255, 255) # Make first number larger to detect yellows
-
 # DARK_ORANGE = (6, 30, 50) # Make final number smaller to detect darker oranges
 # LIGHT_ORANGE  = (15, 60, 100) # Make first number larger to detect yellows
 
@@ -46,8 +43,8 @@ def image_print(img):
 # Creates visual representation of color segmentation process
 def debug_mask(original_image, filtered_image, masked_image):
 	# Plot selected segmentation boundaries
-	light_square = np.full((10, 10, 3), LIGHT_ORANGE, dtype=np.uint8) / 255.0
-	dark_square = np.full((10, 10, 3), DARK_ORANGE, dtype=np.uint8) / 255.0
+	light_square = np.full((10, 10, 3), high_range, dtype=np.uint8) / 255.0
+	dark_square = np.full((10, 10, 3), low_range, dtype=np.uint8) / 255.0
 	plt.subplot(2, 3, 1)
 	plt.imshow(hsv_to_rgb(light_square))
 	plt.subplot(2, 3, 3)
@@ -65,7 +62,7 @@ def debug_mask(original_image, filtered_image, masked_image):
 	plt.imshow(masked_rgb)
 	plt.show()
 
-def cd_color_segmentation(img, template, debug=False):
+def cd_color_segmentation(img, template, low_range, high_range, debug=False):
 	"""
 	Implement the cone detection using color segmentation algorithm
 	Input:

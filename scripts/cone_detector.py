@@ -17,6 +17,11 @@ import matplotlib.pyplot as plt
 # import your color segmentation algorithm; call this function in ros_image_callback!
 from computer_vision.color_segmentation import cd_color_segmentation
 
+DARK_ORANGE = (1, 120, 0) # Make final number smaller to detect darker oranges
+LIGHT_ORANGE  = (110, 255, 255) # Make first number larger to detect yellows
+
+DARK_RED = (0, 0, 0) # Make final number smaller to detect darker red
+LIGHT_RED  = (10, 255, 255) # Make first number larger to detect red
 
 class ConeDetector():
     """
@@ -39,6 +44,7 @@ class ConeDetector():
 
         # Subscribe to ZED camera RGB frames
         self.cone_pub = rospy.Publisher("/relative_cone_px", ConeLocationPixel, queue_size=10)
+        self.stop_sign_pub = rospy.Publisher("/relative_stop_sign_px", ConeLocationPixel, queue_size=10)
         self.debug_pub = rospy.Publisher("/cone_debug_img", Image, queue_size=10)
         DRIVE_TOPIC = "/vesc/ackermann_cmd_mux/input/navigation"
         self.drive_pub = rospy.Publisher(DRIVE_TOPIC, AckermannDriveStamped, queue_size=10)
@@ -79,7 +85,7 @@ class ConeDetector():
             image = blank_image
 
         # Gets center pixel on ground
-        bounding_box = cd_color_segmentation(image, ".",False)
+        bounding_box = cd_color_segmentation(image, ".", DARK_ORANGE, LIGHT_ORANGE, False)
         bottom_center = ((bounding_box[0][0] + bounding_box[1][0]) / 2, bounding_box[1][1])
         
         # Creates message
@@ -103,6 +109,24 @@ class ConeDetector():
 
             # Publishes point
             self.cone_pub.publish(relative_cone_px)
+
+        # Handles detecting stop signs
+
+         # Gets center pixel on ground
+        stop_bounding_box = cd_color_segmentation(image, ".", DARK_RED, LIGHT_RED, False)
+        stop_bottom_center = ((stop_bounding_box[0][0] + stop_bounding_box[1][0]) / 2, stop_bounding_box[1][1])
+        
+        # Creates message
+        if stop_bounding_box == ((0,0), (0,0)):
+            rospy.loginfo("Error: Stop sign not detected")
+        else:
+            relative_stop_px = ConeLocationPixel()
+            relative_stop_px.u = stop_bottom_center[0]
+            relative_stop_px.v = stop_bottom_center[1]
+
+            # Publishes point
+            self.stop_sign_pub.publish(relative_stop_px)
+
 
         # Debug
         cv2.rectangle(image,bounding_box[0],bounding_box[1],(0,255,0),2)

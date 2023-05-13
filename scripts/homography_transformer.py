@@ -51,7 +51,9 @@ class HomographyTransformer:
     
     def __init__(self):
         self.cone_px_sub = rospy.Subscriber("/relative_cone_px", ConeLocationPixel, self.cone_detection_callback)
+        self.stop_px_sub = rospy.Subscriber("/relative_stop_sign_px", ConeLocationPixel, self.stop_sign_detection_callback)
         self.cone_pub = rospy.Publisher("/relative_cone", ConeLocation, queue_size=10)
+        self.stop_sign_pub = rospy.Publisher("/relative_stop_sign", ConeLocation, queue_size=10)
 
         self.marker_pub = rospy.Publisher("/cone_marker",
             Marker, queue_size=1)
@@ -92,6 +94,28 @@ class HomographyTransformer:
         relative_xy_msg.y_pos = y
 
         self.cone_pub.publish(relative_xy_msg)
+
+    def stop_sign_detection_callback(self, msg):
+        #Extract information from message
+        u = msg.u
+        v = msg.v
+
+        #Call to main function
+        x, y = self.transformUvToXy(u, v)
+
+        #Accomdate error in measurement
+        if x >= self.ERROR_OFFSET:
+            x = x + self.ERROR_OFFSET
+
+        #Create cone marker
+        self.draw_marker(x,y,"base_link")
+
+        #Publish relative xy position of object in real world
+        relative_xy_msg = ConeLocation()
+        relative_xy_msg.x_pos = x
+        relative_xy_msg.y_pos = y
+
+        self.stop_sign_pub.publish(relative_xy_msg)
 
 
     def transformUvToXy(self, u, v):

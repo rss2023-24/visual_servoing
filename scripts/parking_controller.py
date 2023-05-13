@@ -20,6 +20,9 @@ class ParkingController():
     def __init__(self):
         rospy.Subscriber("/relative_cone", ConeLocation,
             self.relative_cone_callback)
+        
+        rospy.Subscriber("/relative_stop_sign", ConeLocation,
+            self.relative_stop_sign_callback)
 
         DRIVE_TOPIC = rospy.get_param("~drive_topic") # set in launch file; different for simulator vs racecar
         self.drive_pub = rospy.Publisher(DRIVE_TOPIC,
@@ -109,6 +112,9 @@ class ParkingController():
 
         self.drive_pub.publish(drive_cmd)
         self.error_publisher()
+
+    def relative_stop_sign_callback(self, msg):
+        print(msg)
 
     def error_publisher(self):
         """
